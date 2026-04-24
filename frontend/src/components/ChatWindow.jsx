@@ -44,7 +44,7 @@ const ChatWindow = () => {
     }
   }, [userID]);
 
-  const handleLogout = () => { // for logout the profile
+  const handleLogout = () => { // for logout the user profile
     localStorage.removeItem("trtc_userID");
     window.location.href = "/login";
   };
