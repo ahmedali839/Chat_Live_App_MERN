@@ -5,26 +5,26 @@ const User = require("../models/userModel");
 // Navigate function for generate User
 
 const generateUserSig = (userId) => {
-  const SDKAppID = parseInt(process.env.TRTC_APP_ID);
+  const SDKAppID = Number(process.env.TRTC_APP_ID);
   const SDKSecretKey = process.env.TRTC_SECRET_KEY;
   if (!SDKAppID || !SDKSecretKey) {
-    throw new Error("SDK configuration missing in env");
+    throw new Error("Missing TRTC_APP_ID or TRTC_SECRET_KEY in backend env");
   }
 
-  const api = new TSSigAPIV2.Api({ SDKAppID, SDKSecretKey });
+  const api = new TSSigAPIV2.Api(SDKAppID, SDKSecretKey);
   return api.genSig(userId, 15552000);
 };
 
 // helper function to create tencent server
 const importUserToTencent = async (userId, nickName) => {
   try {
-    const SDKAppID = parseInt(process.env.TRTC_APP_ID);
+    const SDKAppID = Number(process.env.TRTC_APP_ID);
     const adminSig = generateUserSig("administrator");
     const random = Math.floor(Math.random() * 100000000);
 
     const url = `https://console.tim.qq.com/v4/im_open_login_svc/account_import?sdkappid=${SDKAppID}&identifier=administrator&usersig=${adminSig}&random=${random}&contenttype=json`;
 
-    const response = await axios.postt(url, {
+    const response = await axios.post(url, {
       UserID: userId,
       Nick: nickName || userId,
       FaceUrl: "",
@@ -40,6 +40,7 @@ const importUserToTencent = async (userId, nickName) => {
 const loginAndGenerateUserSig = async (req, res) => {
   try {
     const { userID, nickName } = req.body;
+    
     if (!userID)
       return res
         .status(400)
@@ -47,18 +48,18 @@ const loginAndGenerateUserSig = async (req, res) => {
 
     let user = await User.findOne({ userID });
     const freshSig = generateUserSig(userID);
-    if (!freshSig) {
+    if (!user) {
       user = await User.create({
         userID,
         userSig: freshSig,
-        lastlogin: new Date(),
+        lastLogin: new Date(),
       });
 
       //2 Tecent server per import
       await importUserToTencent(userID, nickName);
     } else {
       user.userSig = freshSig;
-      user.lastlogin = new Data();
+      user.lastLogin = new Date();
       await user.save();
     }
 
@@ -74,5 +75,4 @@ const loginAndGenerateUserSig = async (req, res) => {
   }
 };
 
-
-module.exports = {loginAndGenerateUserSig, }
+module.exports = { loginAndGenerateUserSig };

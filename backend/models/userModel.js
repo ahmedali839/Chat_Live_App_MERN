@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
-    userId: {
+    userID: {
       type: String,
       required: true,
       unique: true,
-    //   index: true,
+      //   index: true,
       trim: true,
     },
     userSig: {
@@ -25,9 +25,8 @@ const userSchema = new mongoose.Schema(
   { timestamps: false },
 );
 
-userSchema.index({ userId: 1 });
+userSchema.index({ userID: 1 });
 
-const user = mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema);
 
-module.exports = user;
-
+module.exports = User;
