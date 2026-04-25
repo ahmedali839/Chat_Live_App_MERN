@@ -30,7 +30,6 @@ const importUserToTencent = async (userId, nickName) => {
       FaceUrl: "",
     });
 
-    console.log(response);
     return response.data;
   } catch (error) {
     console.error(`importUserToTencent failed: ${error.message} `);
@@ -39,25 +38,31 @@ const importUserToTencent = async (userId, nickName) => {
 
 const loginAndGenerateUserSig = async (req, res) => {
   try {
-    const { userID, nickName } = req.body;
-    
-    if (!userID)
+    const { userID, userId, nickName } = req.body;
+    const normalizedUserId = userID || userId;
+
+    if (!normalizedUserId)
       return res
         .status(400)
-        .json({ success: false, message: "userID is required." });
+        .json({ success: false, message: "userId is required." });
 
-    let user = await User.findOne({ userID });
-    const freshSig = generateUserSig(userID);
+    let user = await User.findOne({
+      $or: [{ userID: normalizedUserId }, { userId: normalizedUserId }],
+    });
+    const freshSig = generateUserSig(normalizedUserId);
     if (!user) {
       user = await User.create({
-        userID,
+        userID: normalizedUserId,
+        userId: normalizedUserId,
         userSig: freshSig,
         lastLogin: new Date(),
       });
 
       //2 Tecent server per import
-      await importUserToTencent(userID, nickName);
+      await importUserToTencent(normalizedUserId, nickName);
     } else {
+      user.userID = normalizedUserId;
+      user.userId = normalizedUserId;
       user.userSig = freshSig;
       user.lastLogin = new Date();
       await user.save();
@@ -67,6 +72,7 @@ const loginAndGenerateUserSig = async (req, res) => {
       success: true,
       user: {
         userID: user.userID,
+        userId: user.userID,
         userSig: user.userSig,
       },
     });

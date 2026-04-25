@@ -4,8 +4,6 @@ console.log(API_BASE_URL);
 
 export const loginAndGenerateUserSig = async (userID, nickName) => {
   try {
-    console.log("before services");
-
     const response = await fetch(`${API_BASE_URL}/users/login`, {
       method: "POST",
       headers: {
@@ -13,7 +11,6 @@ export const loginAndGenerateUserSig = async (userID, nickName) => {
       },
       body: JSON.stringify({ userID, nickName }),
     });
-    console.log("after services", response);
 
     const data = await response.json();
     if (!response.ok) {

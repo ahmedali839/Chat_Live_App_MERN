@@ -1,7 +1,6 @@
 import "./App.css";
 import Login from "./components/Login.jsx";
 import Dashboard from "./components/Dashboard.jsx";
-// import ChatWindow from "./components/ChatWindow.jsx";
 import {
   BrowserRouter as Router,
   Route,

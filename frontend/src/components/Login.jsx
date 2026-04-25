@@ -58,7 +58,10 @@ const Login = () => {
 
         <form onSubmit={handeLogin} className="space-y-5">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label
+              htmlFor="userID"
+              className="block text-sm font-semibold text-gray-700 mb-1"
+            >
               UserId (Unique Id)
             </label>
             <input
@@ -66,19 +69,24 @@ const Login = () => {
               value={userID}
               onChange={(e) => setUserID(e.target.value)}
               placeholder="e.g ali_123"
+              id="userID"
               className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none  transition-all"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label
+              htmlFor="nickName"
+              className="block text-sm font-semibold text-gray-700 mb-1"
+            >
               Your Name (Optional)
             </label>
             <input
               type="text"
               value={nickName}
               onChange={(e) => setNickName(e.target.value)}
+              id="nickName"
               placeholder="e.g Dheeraj"
               className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none  transition-all"
             />

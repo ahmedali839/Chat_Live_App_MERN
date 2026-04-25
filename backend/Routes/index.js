@@ -4,7 +4,6 @@ const router = express.Router();
 
 router.get("/health", (req, res) => {
   res.json({ success: true, message: "Server is running" });
-  //   res.send("Server is running");
 });
 
 router.use("/users", userRoutes);
